@@ -1,0 +1,54 @@
+def vacuum_agent(location, room_status):
+    """Simple reflex vacuum cleaner agent."""
+    if room_status[location] == "Dirty":
+        print(f"Room {location} is Dirty.")
+        print("Action: SUCK")
+        room_status[location] = "Clean"
+        print(f"Room {location} is now Clean.")
+
+    elif location == "A":
+        print("Room A is Clean.")
+        print("Action: Move Right to Room B")
+        location = "B"
+
+    else:
+        print("Room B is Clean.")
+        print("Action: Move Left to Room A")
+        location = "A"
+
+    return location, room_status
+
+
+def main():
+    location = input("Enter initial location (A/B): ").strip().upper()
+
+    if location not in ("A", "B"):
+        print("Invalid location. Enter A or B.")
+        return
+
+    room_status = {}
+
+    for room in ("A", "B"):
+        status = input(
+            f"Enter status of Room {room} (Dirty/Clean): "
+        ).strip().capitalize()
+
+        if status not in ("Dirty", "Clean"):
+            print("Invalid status. Enter Dirty or Clean.")
+            return
+
+        room_status[room] = status
+
+    print("\nInitial Environment:", room_status)
+    print("Initial Location:", location)
+
+    while not all(status == "Clean" for status in room_status.values()):
+        location, room_status = vacuum_agent(location, room_status)
+
+    print("\nBoth rooms are clean.")
+    print("Action: No Operation (NoOp)")
+
+
+if __name__ == "__main__":
+    main()
+

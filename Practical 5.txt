@@ -1,0 +1,118 @@
+
+from collections import deque
+
+
+def canonical(stacks):
+    """Sort stacks because their table order does not matter."""
+    return tuple(sorted(tuple(stack) for stack in stacks if stack))
+
+
+def successors(state):
+    stacks = [list(stack) for stack in state]
+
+    for i, source in enumerate(stacks):
+        if not source:
+            continue
+
+        block = source[-1]
+
+        # Move the top block onto another stack.
+        for j, destination in enumerate(stacks):
+            if i == j:
+                continue
+
+            new_stacks = [stack[:] for stack in stacks]
+            new_stacks[i].pop()
+            new_stacks[j].append(block)
+
+            yield canonical(new_stacks), f"Move {block} onto {destination[-1]}"
+
+        # Move the top block onto the table.
+        if len(source) > 1:
+            new_stacks = [stack[:] for stack in stacks]
+            new_stacks[i].pop()
+            new_stacks.append([block])
+
+            yield canonical(new_stacks), f"Move {block} to the table"
+
+
+def bfs(start, goal):
+    queue = deque([start])
+    parent = {start: None}
+    action_used = {}
+
+    while queue:
+        state = queue.popleft()
+
+        if state == goal:
+            actions = []
+            current = state
+
+            while parent[current] is not None:
+                actions.append(action_used[current])
+                current = parent[current]
+
+            return list(reversed(actions)), len(parent)
+
+        for next_state, action in successors(state):
+            if next_state not in parent:
+                parent[next_state] = state
+                action_used[next_state] = action
+                queue.append(next_state)
+
+    return None, len(parent)
+
+
+def read_state(prompt):
+    words = input(prompt).upper().split()
+    return canonical([tuple(word) for word in words])
+
+
+def valid_state(state):
+    blocks = [block for stack in state for block in stack]
+
+    return (
+        len(blocks) == len(set(blocks))
+        and all(block.isalnum() and len(block) == 1 for block in blocks)
+    )
+
+
+def main():
+    print("=== BFS Planning: Blocks World ===")
+    print("Enter stacks bottom-to-top separated by spaces.")
+    print("Example: CA B means C is below A, and B is separate.")
+
+    start = read_state("Initial state: ")
+    goal = read_state("Goal state: ")
+
+    if not valid_state(start) or not valid_state(goal):
+        print("Invalid state: each block must appear only once.")
+        return
+
+    start_blocks = sorted(block for stack in start for block in stack)
+    goal_blocks = sorted(block for stack in goal for block in stack)
+
+    if start_blocks != goal_blocks:
+        print("Initial and goal states must contain the same blocks.")
+        return
+
+    plan, generated = bfs(start, goal)
+
+    print("\nStart:", " | ".join("".join(stack) for stack in start))
+
+    if plan is None:
+        print("No plan found.")
+        return
+
+    if not plan:
+        print("Initial state is already the goal state.")
+
+    for step, action in enumerate(plan, 1):
+        print(f"Step {step}: {action}")
+
+    print(f"\nPlan length: {len(plan)} actions")
+    print("States generated:", generated)
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,73 @@
+from collections import deque
+ 
+ 
+def get_successors(state):
+    successors = []
+    for source in range(3):
+        if not state[source]:
+            continue
+        disk = state[source][-1]
+        for destination in range(3):
+            if source == destination:
+                continue
+            if not state[destination] or state[destination][-1] > disk:
+                new_state = [list(peg) for peg in state]
+                new_state[source].pop()
+                new_state[destination].append(disk)
+                successors.append(tuple(tuple(peg) for peg in new_state))
+    return successors
+ 
+ 
+def bfs_tower_of_hanoi(n):
+    start = (tuple(range(n, 0, -1)), (), ())
+    goal = ((), (), tuple(range(n, 0, -1)))
+    queue = deque([start])
+    parent = {start: None}
+ 
+    while queue:
+        state = queue.popleft()
+        if state == goal:
+            path = []
+            current = state
+            while current is not None:
+                path.append(current)
+                current = parent[current]
+            return list(reversed(path))
+ 
+        for next_state in get_successors(state):
+            if next_state not in parent:
+                parent[next_state] = state
+                queue.append(next_state)
+    return None
+ 
+ 
+def print_solution(solution):
+    print("\nSolution steps:")
+    for step, state in enumerate(solution):
+        print(f"Step {step}")
+        print("A:", list(state[0]))
+        print("B:", list(state[1]))
+        print("C:", list(state[2]))
+        print("-" * 25)
+ 
+ 
+def main():
+    try:
+        n = int(input("Enter number of disks (1–6 recommended for BFS): "))
+    except ValueError:
+        print("Please enter a valid integer.")
+        return
+    if not 1 <= n <= 6:
+        print("Please enter a number of disks from 1 to 6.")
+        return
+ 
+    solution = bfs_tower_of_hanoi(n)
+    if solution:
+        print_solution(solution)
+        print("Total moves =", len(solution) - 1)
+    else:
+        print("No solution found.")
+ 
+ 
+if __name__ == "__main__":
+    main()

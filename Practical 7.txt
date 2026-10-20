@@ -1,0 +1,61 @@
+
+import re
+
+RULES = [
+    (r"\b(hi|hello|hey)\b",
+     "Hello! How can I help you?"),
+
+    (r"\bhow are you\b",
+     "I am a program, but I am working fine. Thank you!"),
+
+    (r"\bwhat is your name\b",
+     "I am AI-Bot, a simple rule-based chatbot."),
+
+    (r"\bwho developed you\b",
+     "I was developed as an Artificial Intelligence lab example."),
+
+    (r"\bwhat is (ai|artificial intelligence)\b",
+     "AI is the field of building systems that perform tasks requiring intelligent behavior."),
+
+    (r"\b(bfs|breadth first search)\b",
+     "BFS explores nodes level by level and finds a shortest path in an unweighted graph."),
+
+    (r"\b(a\*|a star)\b",
+     "A* uses f(n) = g(n) + h(n) to guide least-cost path search."),
+
+    (r"\bminimax\b",
+     "Minimax chooses a move by maximizing the minimum outcome against an optimal opponent."),
+
+    (r"\b(thanks|thank you)\b",
+     "You are welcome!"),
+
+    (r"\bhelp\b",
+     "Ask me about AI, BFS, A*, or Minimax. Type 'bye' to exit.")
+]
+
+
+def get_response(message):
+    message = message.lower().strip()
+
+    for pattern, response in RULES:
+        if re.search(pattern, message):
+            return response
+
+    return "Sorry, I did not understand that. Type 'help' to see what I know."
+
+
+def main():
+    print("AI-Bot: Hello! I am a rule-based chatbot. Type 'bye' to exit.")
+
+    while True:
+        user_input = input("You: ").strip()
+
+        if user_input.lower() in ("bye", "exit", "quit"):
+            print("AI-Bot: Goodbye! Have a nice day.")
+            break
+
+        print("AI-Bot:", get_response(user_input))
+
+
+if __name__ == "__main__":
+    main()

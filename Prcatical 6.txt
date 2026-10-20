@@ -1,0 +1,71 @@
+
+def is_safe(board, row, col):
+    for previous_row in range(row):
+        previous_col = board[previous_row]
+
+        if previous_col == col:
+            return False
+
+        if abs(previous_col - col) == abs(previous_row - row):
+            return False
+
+    return True
+
+
+def solve_n_queens(n=8):
+    board = [-1] * n
+    solutions = []
+
+    def backtrack(row):
+        if row == n:
+            solutions.append(board[:])
+            return
+
+        for col in range(n):
+            if is_safe(board, row, col):
+                board[row] = col
+                backtrack(row + 1)
+                board[row] = -1
+
+    backtrack(0)
+    return solutions
+
+
+def print_board(solution):
+    n = len(solution)
+
+    for row in range(n):
+        print(" ".join(
+            "Q" if solution[row] == col else "."
+            for col in range(n)
+        ))
+
+
+def main():
+    solutions = solve_n_queens(8)
+
+    print("Total solutions for 8-Queens:", len(solutions))
+
+    if not solutions:
+        return
+
+    try:
+        count = int(input("How many solutions should be displayed? "))
+    except ValueError:
+        print("Please enter a valid integer.")
+        return
+
+    if count < 0:
+        print("Enter zero or a positive number.")
+        return
+
+    for index, solution in enumerate(solutions[:count], 1):
+        print(
+            f"\nSolution {index}: "
+            f"columns (1-based) = {[col + 1 for col in solution]}"
+        )
+        print_board(solution)
+
+
+if __name__ == "__main__":
+    main()

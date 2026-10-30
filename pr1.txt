@@ -1,0 +1,38 @@
+
+def vacuum_agent(location, status):
+    if status == "Dirty":
+        return "Suck"
+    elif location == "A":
+        return "Move Right"
+    else:
+        return "Move Left"
+
+
+room_A = input("Enter status of room A (Clean/Dirty): ").strip().capitalize()
+room_B = input("Enter status of room B (Clean/Dirty): ").strip().capitalize()
+location = input("Enter starting location (A/B): ").strip().upper()
+
+environment = {"A": room_A, "B": room_B}
+
+print("\nInitial Environment:", environment)
+
+while True:
+    status = environment[location]
+    action = vacuum_agent(location, status)
+
+    print("\nCurrent location:", location)
+    print("Room status:", status)
+    print("Action:", action)
+
+    if action == "Suck":
+        environment[location] = "Clean"
+    elif action == "Move Right":
+        location = "B"
+    elif action == "Move Left":
+        location = "A"
+
+    print("Updated environment:", environment)
+
+    if all(state == "Clean" for state in environment.values()):
+        print("\nBoth rooms are clean!")
+        break

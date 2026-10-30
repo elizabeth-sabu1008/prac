@@ -1,0 +1,35 @@
+from collections import deque
+
+n = int(input("Enter number of blocks: "))
+
+start = tuple(input("Enter initial arrangement: ").split())
+goal = tuple(input("Enter goal arrangement: ").split())
+
+queue = deque([(start, [])])
+visited = {start}
+
+while queue:
+    state, path = queue.popleft()
+
+    if state == goal:
+        print("\nSolution:")
+        for move in path:
+            print(move)
+        print("Total moves:", len(path))
+        break
+
+    for i in range(n):
+        for j in range(n):
+            if i != j:
+                new = list(state)
+                new[i], new[j] = new[j], new[i]
+                new = tuple(new)
+
+                if new not in visited:
+                    visited.add(new)
+                    queue.append((
+                        new,
+                        path + [f"Swap block {state[i]} with {state[j]}"]
+                    ))
+else:
+    print("No solution found")

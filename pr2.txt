@@ -1,0 +1,66 @@
+grid = [
+    [0, 0, 1, 0],
+    [1, 0, 1, 0],
+    [0, 0, 0, 0],
+    [0, 1, 1, 0]
+]
+
+start = (0, 0)
+goal = (3, 3)
+position = start
+visited = set()
+path = []
+
+def get_neighbors(pos):
+    r, c = pos
+    neighbors = [
+        (r - 1, c),  # Up
+        (r + 1, c),  # Down
+        (r, c - 1),  # Left
+        (r, c + 1)   # Right
+    ]
+
+    return [
+        (x, y) for x, y in neighbors
+        if 0 <= x < len(grid)
+        and 0 <= y < len(grid[0])
+        and grid[x][y] == 0
+    ]
+
+def agent():
+    stack = [start]
+    parent = {start: None}
+
+    while stack:
+        current = stack.pop()
+
+        if current in visited:
+            continue
+
+        visited.add(current)
+
+        if current == goal:
+            break
+
+        for neighbor in get_neighbors(current):
+            if neighbor not in parent:
+                parent[neighbor] = current
+                stack.append(neighbor)
+
+    if goal not in parent:
+        print("Goal cannot be reached!")
+        return
+
+    current = goal
+    while current is not None:
+        path.append(current)
+        current = parent[current]
+
+    path.reverse()
+
+    print("Path from Start to Goal:")
+    print(path)
+    print("Visited Cells:", visited)
+    print("Goal reached successfully!")
+
+agent()
